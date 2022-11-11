@@ -2,8 +2,11 @@
 #'
 #' Function generates toy data with multiple LODs for testing functions.
 #' @param n sample size
+#' @param betas vector containing 5 coefficients
+#' @param rho correlation for X's
 #' @param LOD1 vector containing first and second LODs for X1
 #' @param LOD2 vector containing first and second LODs for X2
+#' @param nonlinear should the function use non-linear associations (default=FALSE)
 #'
 #' @examples
 #' set.seed(123)
@@ -20,13 +23,21 @@
 #'
 #' @return true data, observed data and LOD data
 #' @export
-gendat_multiLOD <- function(n=5000,LOD1=c(-2,-1),LOD2=c(-1,-2)){
+gendat_multiLOD <- function(n=5000,
+                            LOD1=c(-2,-1),LOD2=c(-1,-2),
+                            rho=0.5,
+                            betas=c(0,1,1,1,1),
+                            nonlinear=FALSE){
 
   ## generate complete data
   X <- rmvnorm(n,
                mean=rep(0,4),
                sigma= (diag(1,4)+matrix(1,nrow=4,ncol=4)))
-  y <- rnorm(n,X%*%c(1,1,1,1),sd=1)
+  if(nonlinear){
+    y <- rnorm(n, betas[1]*cos(X[,1]-1.5) +betas[2]*X[,2]^3+ X[,3:4]%*%betas[3:4],sd=1)
+  }else{
+    y <- rnorm(n,X%*%betas,sd=1)
+  }
   truedf <- df <- data.frame(y,X)
 
   ## define LODs for x1 and x2 separately for first half and second half of observations

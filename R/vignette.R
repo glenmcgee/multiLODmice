@@ -1,6 +1,5 @@
 # ## testing the multiLODmice functions
 #
-#
 # library(crch)
 # library(censReg)
 # library(mvtnorm)

@@ -32,7 +32,6 @@ X <- dat$X
 df <- dat$df
 LODs <- dat$LODs
 
-
 ## model fit with no censoring
 g_gold <- lm(df$y~X1+X2+X3+X4,data=X) ## gold standard
 

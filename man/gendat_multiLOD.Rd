@@ -4,7 +4,14 @@
 \alias{gendat_multiLOD}
 \title{Generate toy data for testing functions.}
 \usage{
-gendat_multiLOD(n = 5000, LOD1 = c(-2, -1), LOD2 = c(-1, -2))
+gendat_multiLOD(
+  n = 5000,
+  LOD1 = c(-2, -1),
+  LOD2 = c(-1, -2),
+  rho = 0.5,
+  betas = c(0, 1, 1, 1, 1),
+  nonlinear = FALSE
+)
 }
 \arguments{
 \item{n}{sample size}
@@ -12,6 +19,12 @@ gendat_multiLOD(n = 5000, LOD1 = c(-2, -1), LOD2 = c(-1, -2))
 \item{LOD1}{vector containing first and second LODs for X1}
 
 \item{LOD2}{vector containing first and second LODs for X2}
+
+\item{rho}{correlation for X's}
+
+\item{betas}{vector containing 5 coefficients}
+
+\item{nonlinear}{should the function use non-linear associations (default=FALSE)}
 }
 \value{
 true data, observed data and LOD data
