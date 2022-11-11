@@ -36,10 +36,9 @@
 
   ## formula for imputation model (regress var on all others)
   form <-
-    as.formula(paste("y", paste(names(x)[-1], collapse = " + "), sep = " ~ "))
+    as.formula(paste("outcome_y", paste(names(x)[-1], collapse = " + "), sep = " ~ "))
 
-  # print(form) # debug
-  df <- cbind(y,x)
+  df <- cbind(outcome_y=y,x)
 
   ## fit imputation model using crch
   fit3 <- crch::crch(form,data=df, dist = "gaussian",left=lod.j,truncated=FALSE) ## truncated=FALSE gives correct CENSORED regression
@@ -92,14 +91,10 @@ mice.impute.multicens <- function(y, ## the outcome for this imputation model
   ## define yy to be the observed variable AND ALSO the LOD where it has been censored
   yy <- y
   yy[is.finite(lod.j)] <- lod.j[is.finite(lod.j)]
-  #yy[xx == lod.j] <- lod.j ## i.e. if the corresponding LOD column is equal to the lod.j (from standards), then yy gets set to the lod.j (instead of true NAs)
-  ## at this point yy is the outcome as well as censored values, the only NAs left should be true missing values
 
   ## define ryy to be an indicator of observing the variable OR observing the LOD (i.e. FALSE ONLY IF TRULY MISSING)
   ryy <- ry ## indicator that values are fully observed
   ryy[is.finite(lod.j)] <- TRUE # EDIT: now just set to TRUE when LOD is finite ## treat censored values as observed for fitting imputation model
-  # ryy[xx == lod.j] <- TRUE ## treat censored values as observed for fitting imputation model
-  ## by contrast ry indicated which variables need imputing, ryy allows us to use the censored values in fitting the imputation model
 
   ## define method to fit left censored imputation model and get posterior draw of betas+sigma^2 from imputation model
   doMI.multicens.draw3 <- get(".multicens.draw3", envir = asNamespace("multiLODmice"), # use envir = as.environment(1) to instead search the global environment
@@ -112,7 +107,6 @@ mice.impute.multicens <- function(y, ## the outcome for this imputation model
   ## AMONG the observations to be imputed, which ones are really censored (and hence equal to lod.j)
   wyy <- wy[wy]
   wyy[!is.finite(lod.j[wy])] <- FALSE # EDIT: ## set to FALSE if not actually a censored val (hence FALSE values should be truly missing)
-  # wyy[xx[wy] != lod.j] <- FALSE ## set to FALSE if not actually a censored val (hence FALSE values should be truly missing)
 
   ## for all values to be imputed, impute from Normal distribution using beta and sigma from above
   .draw <- as.numeric (x[wy, ] %*% parm$beta +
@@ -123,7 +117,7 @@ mice.impute.multicens <- function(y, ## the outcome for this imputation model
     sum(wyy), a = -Inf, b = lod.j[wy & is.finite(lod.j) ], #EDIT: lod.j now a vector
     mean = x[wy & is.finite(lod.j), ] %*% parm$beta, #EDIT: # mean = x[wy & xx == lod.j, ] %*% parm$beta,
     sd = parm$sigma
-  ) ## truncation should guarantee no values above lod.j
+  )
 
   .draw <- as.matrix(.draw)
   return(.draw)
@@ -188,11 +182,6 @@ multiLODmice <- function(data,      ## main dataset
                     maxit = maxit, blots = my.blots, print = FALSE)
 
   imp.ret <- mice::complete(res, "all")
-
-  # imp.ret <- sapply(imp.ret, function(dtemp, nc = ncol(data)){
-  #   dtemp[, 1:nc]
-  # }, USE.NAMES = TRUE, simplify = FALSE)
-
 
   if(return.midsObject){
     imp2 <- mice::complete(res, "long", include = TRUE)
