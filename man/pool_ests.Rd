@@ -15,3 +15,6 @@ List of estimates vector and variance-covariance matrix.
 \description{
 Internal function for pooling generic estimates via Rubin's rules.
 }
+\seealso{
+\code{\link{pool_lm}}
+}

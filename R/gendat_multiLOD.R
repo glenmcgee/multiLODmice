@@ -2,6 +2,8 @@
 #'
 #' Function generates toy data with multiple LODs for testing functions.
 #' @param n sample size
+#' @param LOD1 vector containing first and second LODs for X1
+#' @param LOD2 vector containing first and second LODs for X2
 #'
 #' @examples
 #' set.seed(123)
@@ -18,7 +20,7 @@
 #'
 #' @return true data, observed data and LOD data
 #' @export
-gendat_multiLOD <- function(n=5000){
+gendat_multiLOD <- function(n=5000,LOD1=c(-2,-1),LOD2=c(-1,-2)){
 
   ## generate complete data
   X <- rmvnorm(n,
@@ -29,8 +31,8 @@ gendat_multiLOD <- function(n=5000){
 
   ## define LODs for x1 and x2 separately for first half and second half of observations
   LODs <- df[,-1]
-  LODs[1:(n/2),1] <- -2;LODs[(n/2) + (1:(n/2)),1] <- -1 ## -2 for first half, -1 for second half
-  LODs[1:(n/2),2] <- -1;LODs[(n/2) + (1:(n/2)),2] <- -2 ## -1 for first half, -2 for second half
+  LODs[1:(n/2),1] <- LOD1[1];LODs[(n/2) + (1:(n/2)),1] <- LOD1[2]
+  LODs[1:(n/2),2] <- LOD2[1];LODs[(n/2) + (1:(n/2)),2] <- LOD2[2]
   LODs[,3] <- LODs[,4] <- -Inf ## uncensored
 
   ## censor the values of x1 and x2
@@ -41,7 +43,7 @@ gendat_multiLOD <- function(n=5000){
   ## prepare LODs for function ## i.e. make LOD NA for non-censored values
   LODs[!is.na(Xcens)] <- NA
 
-  return(list(X=X, ## true exposure data
+  return(list(X=data.frame(X), ## true exposure data
               df=df, ## observed/censored dataset
               LODs=LODs)) ##LODs
 }

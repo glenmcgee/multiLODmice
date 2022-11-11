@@ -5,7 +5,7 @@ Version: 0.1.0
 Author: Glen McGee
 Maintainer: Glen McGee <gmcgee@uwaterloo.ca>
 Description: Multiple imputation for left-censored variables with multiple LODs via mice. Extends the approach of Lapidus et al to multiple LODs. Based on code from doMIsaul package.
-License: GNU GPL v3.0 (GNU General Public License v3.0)
+License: GPL (>= 3)
 Encoding: UTF-8
 Imports:
     mice,

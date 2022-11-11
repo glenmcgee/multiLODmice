@@ -4,10 +4,14 @@
 \alias{gendat_multiLOD}
 \title{Generate toy data for testing functions.}
 \usage{
-gendat_multiLOD(n = 5000)
+gendat_multiLOD(n = 5000, LOD1 = c(-2, -1), LOD2 = c(-1, -2))
 }
 \arguments{
 \item{n}{sample size}
+
+\item{LOD1}{vector containing first and second LODs for X1}
+
+\item{LOD2}{vector containing first and second LODs for X2}
 }
 \value{
 true data, observed data and LOD data

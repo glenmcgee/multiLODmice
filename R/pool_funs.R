@@ -13,6 +13,9 @@
 #'
 #'
 #' @return List of estimates vector and variance-covariance matrix.
+#'
+#' @seealso \code{\link{pool_ests}} and \code{\link{pool_lm}}
+#'
 #' @export
 pool_gam <- function(form,impdat,fixedknots,fam="gaussian",combinemethod="betas"){
   ## get formula for lm
@@ -41,8 +44,56 @@ pool_gam <- function(form,impdat,fixedknots,fam="gaussian",combinemethod="betas"
 #' @param impdat list of imputed datasets
 #' @param fam family (default="gaussian") to be passed to glm()
 #'
-#'
 #' @return List of estimates vector and variance-covariance matrix.
+#'
+#' @seealso \code{\link{pool_ests}} and \code{\link{pool_gam}}
+#'
+#' @examples
+#' set.seed(123)
+#' require(crch)
+#' require(censReg)
+#' require(mvtnorm)
+#'
+#' ## generate complete data
+#' n <- 5000
+#' dat <- gendat_multiLOD(n)
+#' X <- dat$X
+#' df <- dat$df
+#' LODs <- dat$LODs
+#'
+#'
+#' ## model fit with no censoring
+#' g_gold <- lm(df$y~X1+X2+X3+X4,data=X) ## gold standard
+#'
+#' ## complete cases only
+#' g_cc <- lm(y~X1+X2+X3+X4,data=df)
+#'
+#' ## naive imputation: LOD/sqrt(2)
+#' df_naive <- df
+#' df_naive$X1[!is.na(LODs$X1)] <- LODs$X1[!is.na(LODs$X1)]/sqrt(2)
+#' df_naive$X2[!is.na(LODs$X2)] <- LODs$X2[!is.na(LODs$X2)]/sqrt(2)
+#' g_naive <- lm(y~X1+X2+X3+X4,data=df_naive)
+#'
+#' ## MI
+#' kk <- 20
+#' df_imp <- multiLODmice(data = df, data.lod = LODs,mi.m = kk)
+#' g_imp <- pool_lm(y~X1+X2+X3+X4,df_imp)
+#' g_imp <- pool_ests(g_imp)
+#'
+#' ## compare percent bias
+#' beta <- c(0,1,1,1,1)
+#' round(100*(coef(g_gold)-beta))
+#' round(100*(coef(g_cc)-beta))
+#' round(100*(coef(g_naive)-beta))
+#' round(100*(g_imp$ests-beta))
+#'
+#' ## compare uncertainty
+#' round(sqrt(diag(vcov(g_gold))),3)
+#' round(sqrt(diag(vcov(g_cc))),3)
+#' round(sqrt(diag(vcov(g_naive))),3)
+#' round(sqrt(diag(g_imp$vcov)),3)
+#'
+#'
 #' @export
 pool_lm <- function(form,impdat,fam="gaussian"){
 
@@ -68,6 +119,12 @@ pool_lm <- function(form,impdat,fam="gaussian"){
 #'
 #'
 #' @return List of estimates vector and variance-covariance matrix.
+#'
+#' @seealso \code{\link{pool_lm}}
+#'
+#' @example
+#' ## See \code{\link{pool_lm}}
+#'
 #' @export
 pool_ests <- function(obj){
   mm <- length(obj) ## number of imputations

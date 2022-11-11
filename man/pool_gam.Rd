@@ -23,3 +23,6 @@ List of estimates vector and variance-covariance matrix.
 \description{
 Uses Rubin's rules to combine GAM fits across imputed datasets.
 }
+\seealso{
+\code{\link{pool_ests}} and \link{pool_lm}
+}
