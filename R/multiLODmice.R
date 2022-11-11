@@ -145,6 +145,37 @@ environment(mice.impute.multicens) <- environment(mice::mice.impute.norm)
 #' @param data.lod dataset containing columns corresponding to LOD values (left censors) and NA elsewhere (for non-censored observations or truly missing values). Column names must match columns from \code{data} with censored values.
 #' @param mi.m Number of imputed datasets
 #'
+#' @examples
+#' set.seed(123)
+#' require(crch)
+#' require(censReg)
+#' require(mvtnorm)
+#'
+#' ## generate complete data
+#' n <- 5000
+#' dat <- gendat_multiLOD(n)
+#' X <- dat$X
+#' df <- dat$df
+#' LODs <- dat$LODs
+#'
+#' ## impute data
+#' kk <- 20
+#' df_imp <- multiLODmice(data = df, data.lod = LODs,mi.m = kk)
+#'
+#' ## check that imputed values are correctly below the LOD
+#' sum(sapply(df_imp,function(dat) sum(dat$X1[is.na(df$X1) & seq(1,n)<(n/2)]> (-2))))==0 ## first LOD for X1
+#' sum(sapply(df_imp,function(dat) sum(dat$X1[is.na(df$X1) & seq(1,n)>(n/2)]> (-1))))==0 ## second LOD for X1
+#' sum(sapply(df_imp,function(dat) sum(dat$X2[is.na(df$X2) & seq(1,n)<(n/2)]> (-1))))==0 ## first LOD for X2
+#' sum(sapply(df_imp,function(dat) sum(dat$X2[is.na(df$X2) & seq(1,n)>(n/2)]> (-2))))==0 ## second LOD for X2
+#'
+#' ## compare imputations to true values
+#' mean_imp1 <- apply(sapply(df_imp,function(dat) dat$X1[is.na(df$X1)]),1,mean)
+#' mean_imp2 <- apply(sapply(df_imp,function(dat) dat$X2[is.na(df$X2)]),1,mean)
+#'
+#' ## check accuracy
+#' summary(lm(X[is.na(df$X1),1]~mean_imp1))
+#' summary(lm(X[is.na(df$X2),2]~mean_imp2))
+#'
 #'
 #' @export
 multiLODmice <- function(data,      ## main dataset
