@@ -4,18 +4,14 @@
 \alias{pool_gam}
 \title{Fit GAM to each imputed dataset and combine.}
 \usage{
-pool_gam(form, impdat, fixedknots, fam = "gaussian", combinemethod = "betas")
+pool_gam(form, impdat, fam = "gaussian")
 }
 \arguments{
 \item{form}{model formula as in mgcv}
 
 \item{impdat}{list of imputed datasets}
 
-\item{fixedknots}{list of fixed knots to be used by all model fits}
-
 \item{fam}{family (default="gaussian") to be passed to mgcv::gam()}
-
-\item{combinemethod}{method for combining results. Default="betas" combines coefficients as in lm(). Otherwise combines fitted values}
 }
 \value{
 List of estimates vector and variance-covariance matrix.
@@ -37,35 +33,25 @@ df <- dat$df
 LODs <- dat$LODs
 
 ## model fit with no censoring
-g_gold <- lm(df$y~X1+X2+X3+X4,data=X) ## gold standard
+g_gold <- gam(df$y~s(X1)+s(X2)+X3+X4,data=X) ## gold standard
+plot(g_gold)
 
 ## complete cases only
-g_cc <- lm(y~X1+X2+X3+X4,data=df)
+g_cc <- gam(y~s(X1)+s(X2)+X3+X4,data=df)
+plot(g_cc)
 
 ## naive imputation: LOD/sqrt(2)
 df_naive <- df
 df_naive$X1[!is.na(LODs$X1)] <- LODs$X1[!is.na(LODs$X1)]/sqrt(2)
 df_naive$X2[!is.na(LODs$X2)] <- LODs$X2[!is.na(LODs$X2)]/sqrt(2)
-g_naive <- lm(y~X1+X2+X3+X4,data=df_naive)
+g_naive <- gam(y~s(X1)+s(X2)+X3+X4,data=df_naive)
+plot(g_naive)
 
 ## MI
 kk <- 20
-df_imp <- multiLODmice(data = df, data.lod = LODs,mi.m = kk)
-g_imp <- pool_lm(y~X1+X2+X3+X4,df_imp)
-g_imp <- pool_ests(g_imp)
-
-## compare percent bias
-beta <- c(0,1,1,1,1)
-round(100*(coef(g_gold)-beta))
-round(100*(coef(g_cc)-beta))
-round(100*(coef(g_naive)-beta))
-round(100*(g_imp$ests-beta))
-
-## compare uncertainty
-round(sqrt(diag(vcov(g_gold))),3)
-round(sqrt(diag(vcov(g_cc))),3)
-round(sqrt(diag(vcov(g_naive))),3)
-round(sqrt(diag(g_imp$vcov)),3)
+df_imp <- multiLODmice(data = df, data.lod = LODs,mi.m = kk,excludeLODimp = "y")
+g_imp <- pool_gam(y~s(X1,bs="bs",k=10)+s(X2,bs="bs",k=10)+X3+X4,df_imp)
+plot(g_imp)
 
 }
 \seealso{

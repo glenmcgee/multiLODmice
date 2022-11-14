@@ -4,7 +4,14 @@
 \alias{multiLODmice}
 \title{Main function for mice with multiply left censored data.}
 \usage{
-multiLODmice(data, data.lod, mi.m, maxit = 10, return.midsObject = FALSE)
+multiLODmice(
+  data,
+  data.lod,
+  mi.m,
+  excludeLODimp = NULL,
+  maxit = 10,
+  return.midsObject = FALSE
+)
 }
 \arguments{
 \item{data}{dataset including some missing or censored values}
@@ -13,22 +20,7 @@ multiLODmice(data, data.lod, mi.m, maxit = 10, return.midsObject = FALSE)
 
 \item{mi.m}{Number of imputed datasets}
 
-\item{y}{Vector to be imputed}
-
-\item{ry}{Logical vector of length \code{length(y)} indicating the the subset
-\code{y[ry]} of elements in y to which the imputation model is fitted.
-The \code{ry} generally distinguishes the observed (\code{TRUE}) and
-missing values (\code{FALSE}) in y.}
-
-\item{x}{Numeric design matrix with \code{length(y)} rows with predictors
-for \code{y}. Matrix \code{x} may have no missing values.}
-
-\item{lod.j}{Vector of varying LODs (left censoring values). -Inf for non censored values.}
-
-\item{wy}{Logical vector of length \code{length(y)}. A \code{TRUE} value
-indicates locations in \code{y} for which imputations are created.}
-
-\item{...}{Other named arguments.}
+\item{excludeLODimp}{vector of names of variables to be excluded from truncated LOD imputation model}
 }
 \description{
 Calls mice with custom method for multiply left censored data. Based on \code{Lapidus et al.} for imputing left-censored data with mice; extended to varying LODs. Modified version of MImpute_lcens function from doMIsaul package.

@@ -4,7 +4,7 @@
 \alias{mice.impute.multicens}
 \title{Impute left censored data with MICE}
 \usage{
-mice.impute.multicens(y, ry, x, lod.j, wy = NULL, ...)
+mice.impute.multicens(y, ry, x, lod.j, excludenames, wy = NULL, ...)
 }
 \arguments{
 \item{y}{Vector to be imputed}

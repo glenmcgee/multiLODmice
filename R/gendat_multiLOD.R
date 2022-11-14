@@ -32,7 +32,7 @@ gendat_multiLOD <- function(n=5000,
   ## generate complete data
   X <- mvtnorm::rmvnorm(n,
                mean=rep(0,4),
-               sigma= (diag(1,4)+matrix(1,nrow=4,ncol=4)))
+               sigma= (diag(1,4)+matrix(rho,nrow=4,ncol=4)))
   if(nonlinear){
     y <- rnorm(n, betas[1]*cos(X[,1]-1.5) +betas[2]*2*(2*dnorm((X[,2]+2))-0.5*dnorm(X[,2]-1)+2*dnorm(X[,2]))+ X[,3:4]%*%betas[3:4],sd=1)
   }else{

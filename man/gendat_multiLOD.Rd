@@ -9,7 +9,7 @@ gendat_multiLOD(
   LOD1 = c(-2, -1),
   LOD2 = c(-1, -2),
   rho = 0.5,
-  betas = c(0, 1, 1, 1, 1),
+  betas = c(1, 1, 1, 1),
   nonlinear = FALSE
 )
 }

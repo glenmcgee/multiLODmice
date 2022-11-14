@@ -48,7 +48,6 @@ g_naive <- lm(y~X1+X2+X3+X4,data=df_naive)
 kk <- 20
 df_imp <- multiLODmice(data = df, data.lod = LODs,mi.m = kk)
 g_imp <- pool_lm(y~X1+X2+X3+X4,df_imp)
-g_imp <- pool_ests(g_imp)
 
 ## compare percent bias
 beta <- c(0,1,1,1,1)
