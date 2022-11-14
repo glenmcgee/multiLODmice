@@ -35,8 +35,7 @@
   lod.j <- lod.j[ry]
 
   ## formula for imputation model (regress var on all others)
-  form <-
-    as.formula(paste("outcome_y", paste(names(x)[-1], collapse = " + "), sep = " ~ "))
+  form <- as.formula(paste("outcome_y", paste(names(x)[-1], collapse = " + "), sep = " ~ "))
 
   df <- cbind(outcome_y=y,x)
 
@@ -78,6 +77,7 @@ mice.impute.multicens <- function(y, ## the outcome for this imputation model
                              ry, ## indicator of being observed or NA (censored values are considered NA so that they can be imputed)
                              x, ## all other covariates, LOD columns included
                              lod.j, ## vector of LODs
+                             excludenames, ## vector of names to be excluded
                              wy = NULL, ...) {
 
   ## define wy to be an indicator of observations to be imputed
@@ -87,6 +87,7 @@ mice.impute.multicens <- function(y, ## the outcome for this imputation model
 
   ## x is just the predictors
   x <- cbind(1,as.matrix(x))
+  x <- x[,!(colnames(x) %in% excludenames)]
 
   ## define yy to be the observed variable AND ALSO the LOD where it has been censored
   yy <- y
@@ -129,21 +130,11 @@ environment(mice.impute.multicens) <- environment(mice::mice.impute.norm)
 #' Main function for mice with multiply left censored data.
 #'
 #' Calls mice with custom method for multiply left censored data. Based on \code{Lapidus et al.} for imputing left-censored data with mice; extended to varying LODs. Modified version of MImpute_lcens function from doMIsaul package.
-#' @param y Vector to be imputed
-#' @param ry Logical vector of length \code{length(y)} indicating the the subset
-#'   \code{y[ry]} of elements in y to which the imputation model is fitted.
-#'   The \code{ry} generally distinguishes the observed (\code{TRUE}) and
-#'   missing values (\code{FALSE}) in y.
-#' @param x Numeric design matrix with \code{length(y)} rows with predictors
-#'   for \code{y}. Matrix \code{x} may have no missing values.
-#' @param lod.j Vector of varying LODs (left censoring values). -Inf for non censored values.
-#' @param wy Logical vector of length \code{length(y)}. A \code{TRUE} value
-#'   indicates locations in \code{y} for which imputations are created.
-#' @param ... Other named arguments.
 #'
 #' @param data dataset including some missing or censored values
 #' @param data.lod dataset containing columns corresponding to LOD values (left censors) and NA elsewhere (for non-censored observations or truly missing values). Column names must match columns from \code{data} with censored values.
 #' @param mi.m Number of imputed datasets
+#' @param excludeLODimp vector of names of variables to be excluded from truncated LOD imputation model
 #'
 #' @examples
 #' set.seed(123)
@@ -181,7 +172,9 @@ environment(mice.impute.multicens) <- environment(mice::mice.impute.norm)
 multiLODmice <- function(data,      ## main dataset
                          data.lod,  ## EDITED: LOD columns indicating LOD (for censored values) or -Inf (for un-censored values--these are either observed or truly missing) ## should have same names as corresponding data columns
                          mi.m,      ## number of imputed datasets
-                         maxit = 10, return.midsObject = FALSE){
+                         excludeLODimp=NULL, ## vector of names of variables to be excluded from truncated LOD imputation model
+                         maxit = 10,
+                         return.midsObject = FALSE){
 
   data.lod[is.na(data.lod)] <- -Inf ## convert NAs in data.lod to an LOD of -Inf
 
@@ -202,7 +195,8 @@ multiLODmice <- function(data,      ## main dataset
   ## pass entire vector of time-varying LODs from data.lod
   my.blots <- sapply(names(my.method), function(i){
     if (my.method[i] == "multicens") {
-      list(lod.j = data.lod[, i]) ## passing the entire vector of LODs (including -Inf for non-censored values)
+      list(lod.j = data.lod[, i], ## passing the entire vector of LODs (including -Inf for non-censored values)
+           excludenames=excludeLODimp)
     } else {
       list()
     }

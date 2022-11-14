@@ -26,15 +26,15 @@
 gendat_multiLOD <- function(n=5000,
                             LOD1=c(-2,-1),LOD2=c(-1,-2),
                             rho=0.5,
-                            betas=c(0,1,1,1,1),
+                            betas=c(1,1,1,1),
                             nonlinear=FALSE){
 
   ## generate complete data
-  X <- rmvnorm(n,
+  X <- mvtnorm::rmvnorm(n,
                mean=rep(0,4),
                sigma= (diag(1,4)+matrix(1,nrow=4,ncol=4)))
   if(nonlinear){
-    y <- rnorm(n, betas[1]*cos(X[,1]-1.5) +betas[2]*X[,2]^3+ X[,3:4]%*%betas[3:4],sd=1)
+    y <- rnorm(n, betas[1]*cos(X[,1]-1.5) +betas[2]*2*(2*dnorm((X[,2]+2))-0.5*dnorm(X[,2]-1)+2*dnorm(X[,2]))+ X[,3:4]%*%betas[3:4],sd=1)
   }else{
     y <- rnorm(n,X%*%betas,sd=1)
   }
