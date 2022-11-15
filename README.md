@@ -4,8 +4,7 @@ Custom functions to extend mice for left-censored predictors with varying LODs.
 
 To install:
 ```R
-install.packages('devtools')
-devtools::install_github('glenmcgee/multiLODmice')
+devtools::install_github('glenmcgee/multiLODmice') ## install package from github
 ```
 
 Based on functions MImpute_lcens, mice.impute.cens, and .cens.draw3 from doMIsaul package by Faucheux et al (https://github.com/LilithF/doMIsaul).
