@@ -6,7 +6,7 @@
 #' Pool generic estimates.
 #'
 #' Internal function for pooling generic estimates via Rubin's rules.
-#' @param obj model formula as in mgcv
+#' @param obj list of ests and vcovs to be pooled
 #'
 #'
 #' @return List of estimates vector and variance-covariance matrix.

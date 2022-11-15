@@ -225,37 +225,4 @@ multiLODmice <- function(data,      ## main dataset
 
 }
 
-#
-# #### TESTING IT OUT:
-# set.seed(1)
-# toyraw <- iris[, 1:4]
-# toy <- toyraw
-# toy <- toy[sample(nrow(toy)),]
-#
-# Censored <- toy[,1:2]
-# c1 <- rep(quantile(toy[,1],c(0.1,0.25,0.45)),each=50)
-# Censored[toy[,1]<c1,1] <- c1[toy[,1]<c1]
-# Censored[toy[,1]>=c1,1] <- NA
-# c2 <- rep(quantile(toy[,2],c(0.1,0.25,0.45)),each=50)
-# Censored[toy[,2]<c2,2] <- c2[toy[,2]<c2]
-# Censored[toy[,2]>=c2,2] <- NA
-#
-# toy[toy[,1]<c1,1] <- NA
-# toy[toy[,2]<c2,2] <- NA
-#
-#
-# toy.imp <- multiLODmice(data = toy, data.lod = Censored,
-#                          mi.m = 5)
-#
-#
-# i=1
-# j=3
-# range=c((j-1)*50 + (1:50))
-# max(c(toy.imp$`1`[range[which(is.na(toy[range,i]))],i],
-#       toy.imp$`2`[range[which(is.na(toy[range,i]))],i],
-#       toy.imp$`3`[range[which(is.na(toy[range,i]))],i],
-#       toy.imp$`4`[range[which(is.na(toy[range,i]))],i],
-#       toy.imp$`5`[range[which(is.na(toy[range,i]))],i]))
-# quantile(toyraw[,i],c(0.1,0.25,0.45)[j])
-# hist(c(toy.imp$`5`[range[which(is.na(toy[range,i]))],i]),xlim=range(toyraw[,i]))
-# hist(c(toy.imp$`2`[range[which(!is.na(toy[range,i]))],i]),xlim=range(toyraw[,i]))
+
