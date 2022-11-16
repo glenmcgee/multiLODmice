@@ -7,7 +7,7 @@
 pool_ests(obj)
 }
 \arguments{
-\item{obj}{model formula as in mgcv}
+\item{obj}{list of ests and vcovs to be pooled}
 }
 \value{
 List of estimates vector and variance-covariance matrix.

@@ -113,7 +113,7 @@ pool_lm <- function(form,impdat,fam="gaussian"){
 
 #' Fit GAM to each imputed dataset and combine.
 #'
-#' Uses Rubin's rules to combine GAM fits across imputed datasets.
+#' Uses Rubin's rules to combine GAM fits across imputed datasets. Note that it combines the corrected variance covariance matrix (Vc). Plots must use unconditional=TRUE.
 #' @param form model formula as in mgcv
 #' @param impdat list of imputed datasets
 #' @param fam family (default="gaussian") to be passed to mgcv::gam()
@@ -179,14 +179,21 @@ pool_gam <- function(form,impdat,fam="gaussian"){
 
   ## return list of ests and vcovs from model fits
   res <- lapply(fits,function(obj) list(ests=obj$coef,
-                                        vcovs=obj$Vp))
+                                        vcovs=obj$Vc)) ## corrected variance covariance
   ## apply rubins rules
   res <- pool_ests(res)
+
+  ## return list of ests and vcovs from model fits
+  res_uncorrected <- lapply(fits,function(obj) list(ests=obj$coef,
+                                                    vcovs=obj$Vp)) ## UNCORRECTED variance covariance ## just in case
+  ## apply rubins rules
+  res_uncorrected <- pool_ests(res_uncorrected)
 
   ## stuff them back in a gam object for plotting
   pooled_gam <- fits[[1]]
   pooled_gam$coefficients <- res$ests
-  pooled_gam$Vp <- res$vcov
+  pooled_gam$Vc <- res$vcov  ## corrected variance covariance
+  pooled_gam$Vp <- res_uncorrected$vcov  ## UNCORRECTED variance covariance ## just in case
   pooled_gam$df.residual <- mean(sapply(fits,"[[","df.residual")) ## dont actually use this
 
   return(pooled_gam)
